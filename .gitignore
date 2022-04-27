@@ -130,3 +130,5 @@ dmypy.json
 
 # Papers directory where all papers are downloaded
 papers/
+
+.DS_Store
