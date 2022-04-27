@@ -5,6 +5,7 @@ for the Computer Engineering and Computer Science department
 
 import os
 import requests
+import time
 
 BASE_URL = "https://scholarworks.sjsu.edu/cgi/viewcontent.cgi?article=%s&context=etd_projects"
 
@@ -30,13 +31,18 @@ def main():
         print("Creating papers directory")
         os.mkdir("papers")
 
+    start_time = time.time()
     for i in range(START_INDEX, END_INDEX + 1):
         r = requests.get(BASE_URL % i)
         if r.status_code == 200:
             print("Downloading paper at index %d" % i)
             download_pdf(r, i)
 
+    end_time = time.time()
+
     print("\nPaper fetcher is done!")
+
+    print("Time taken: %.2f seconds" % (end_time - start_time))
 
 
 if __name__ == "__main__":
