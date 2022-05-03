@@ -3,24 +3,31 @@ This script downloads Master's project papers from SJSU ScholarWorks
 for the Computer Engineering and Computer Science department
 """
 
+from http.client import PROCESSING
 import os
 import requests
 import time
 from absl import app
 from absl import flags
-from concurrent.futures import ThreadPoolExecutor, ProcessPoolExecutor, as_completed
+from absl import logging
+from concurrent.futures import ThreadPoolExecutor, ProcessPoolExecutor
 
 BASE_URL = "https://scholarworks.sjsu.edu/cgi/viewcontent.cgi?article=%s&context=etd_projects"
 
 START_INDEX = 1000
 END_INDEX = 2060
-WORKERS = 17
+THREADS = 17
+PROCESSES = 8
 
 FLAGS = flags.FLAGS
 
+flags.DEFINE_boolean("debug", False, "Print debug messages")
 flags.DEFINE_boolean("parallel", True, "Download papers in parallel")
 flags.DEFINE_boolean("multiprocessing", True, "Download papers in multiprocessing vs. threading")
-flags.DEFINE_integer("workers", WORKERS, "Number of workers to use")
+flags.DEFINE_integer("threads", THREADS, "Number of threads to use while using multithreading")
+flags.DEFINE_integer("processes", PROCESSES, "Number of processes to use while using multiprocessing")
+
+CHUNKSIZE = (END_INDEX - START_INDEX) // FLAGS.processes
 
 
 def func_timer(func):
@@ -43,7 +50,8 @@ def download_pdf(index):
     """
     r = requests.get(BASE_URL % index)
     if r.status_code == 200:
-        print("Downloading paper at index %d" % index)
+        if FLAGS.debug:
+            logging.debug(f"Downloading paper at index {index}")
         with open("papers/%s.pdf" % index, "wb") as f:
             f.write(r.content)
 
@@ -53,6 +61,7 @@ def download_papers_sequentially():
     """
     Downloads papers sequentially
     """
+    logging.info("Downloading papers sequentially")
     for i in range(START_INDEX, END_INDEX + 1):
         download_pdf(i)
 
@@ -63,20 +72,22 @@ def download_papers_in_parallel():
     Downloads papers in parallel
     """
     if FLAGS.multiprocessing:
-        parallel_executor = ProcessPoolExecutor(max_workers=FLAGS.workers)
+        logging.info("Downloading papers using multiprocessing")
+        with ProcessPoolExecutor(max_workers=FLAGS.processes) as executor:
+            return executor.map(download_pdf, range(START_INDEX, END_INDEX + 1), chunksize=CHUNKSIZE)
     else:
-        parallel_executor = ThreadPoolExecutor(max_workers=FLAGS.workers)
+        logging.info("Downloading papers using multithreading")
+        with ThreadPoolExecutor(max_workers=FLAGS.threads) as executor:
+            return executor.map(download_pdf, range(START_INDEX, END_INDEX + 1))
 
-    with parallel_executor as executor:
-        return executor.map(download_pdf, range(START_INDEX, END_INDEX + 1))
 
 
 def main():
-    print("Paper fetcher is starting...\n")
+    logging.info("Paper fetcher is starting...\n")
 
     # Create papers directory if it doesn't exist
     if not os.path.exists(os.getcwd() + "/papers"):
-        print("Creating papers directory")
+        logging.info("Creating papers directory")
         os.mkdir("papers")
 
     if FLAGS.parallel:
@@ -84,7 +95,7 @@ def main():
     else:
         download_papers_sequentially()
 
-    print("\nPaper fetcher is done!")
+    logging.info("\nPaper fetcher is done!")
 
 
 if __name__ == "__main__":
