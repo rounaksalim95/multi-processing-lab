@@ -48,8 +48,11 @@ def download_pdf(index):
     """
     r = requests.get(BASE_URL % index)
     if r.status_code == 200:
-        if FLAGS.debug:
-            logging.info(f"Downloading paper at index {index}")
+        # FLAGS.debug can't be used if using multiprocessing as the FLAGS haven't been defined yet
+        # in the new processes spawned
+        # if FLAGS.debug:
+        #     logging.info(f"Downloading paper at index {index}")
+        logging.info(f"Downloading paper at index {index}")
         with open("papers/%s.pdf" % index, "wb") as f:
             f.write(r.content)
 
@@ -72,7 +75,10 @@ def download_papers_in_parallel():
     if FLAGS.multiprocessing:
         logging.info("Downloading papers using multiprocessing")
         with ProcessPoolExecutor(max_workers=FLAGS.processes) as executor:
-            return executor.map(download_pdf, range(START_INDEX, END_INDEX + 1), chunksize=CHUNKSIZE)
+            for arg, res in zip(range(START_INDEX, END_INDEX + 1), executor.map(download_pdf, range(START_INDEX, END_INDEX + 1), chunksize=CHUNKSIZE)):
+                pass
+        logging.info("All processes returned")
+        return "done"
     else:
         logging.info("Downloading papers using multithreading")
         with ThreadPoolExecutor(max_workers=FLAGS.threads) as executor:
