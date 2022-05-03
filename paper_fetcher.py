@@ -3,7 +3,6 @@ This script downloads Master's project papers from SJSU ScholarWorks
 for the Computer Engineering and Computer Science department
 """
 
-from http.client import PROCESSING
 import os
 import requests
 import time
@@ -18,6 +17,7 @@ START_INDEX = 1000
 END_INDEX = 2060
 THREADS = 17
 PROCESSES = 8
+CHUNKSIZE = (END_INDEX - START_INDEX) // PROCESSES
 
 FLAGS = flags.FLAGS
 
@@ -26,8 +26,6 @@ flags.DEFINE_boolean("parallel", True, "Download papers in parallel")
 flags.DEFINE_boolean("multiprocessing", True, "Download papers in multiprocessing vs. threading")
 flags.DEFINE_integer("threads", THREADS, "Number of threads to use while using multithreading")
 flags.DEFINE_integer("processes", PROCESSES, "Number of processes to use while using multiprocessing")
-
-CHUNKSIZE = (END_INDEX - START_INDEX) // FLAGS.processes
 
 
 def func_timer(func):
@@ -38,7 +36,7 @@ def func_timer(func):
         start_time = time.time()
         result = func(*args, **kwargs)
         end_time = time.time()
-        print("\nTime taken: %.2f seconds" % (end_time - start_time))
+        logging.info("Time taken: %.2f seconds" % (end_time - start_time))
         return result
     return wrapper
 
@@ -51,7 +49,7 @@ def download_pdf(index):
     r = requests.get(BASE_URL % index)
     if r.status_code == 200:
         if FLAGS.debug:
-            logging.debug(f"Downloading paper at index {index}")
+            logging.info(f"Downloading paper at index {index}")
         with open("papers/%s.pdf" % index, "wb") as f:
             f.write(r.content)
 
@@ -82,7 +80,10 @@ def download_papers_in_parallel():
 
 
 
-def main():
+def main(argv):
+    global CHUNKSIZE    # Use global CHUNKSIZE varible
+    CHUNKSIZE = (END_INDEX - START_INDEX) // FLAGS.processes
+
     logging.info("Paper fetcher is starting...\n")
 
     # Create papers directory if it doesn't exist
@@ -95,7 +96,7 @@ def main():
     else:
         download_papers_sequentially()
 
-    logging.info("\nPaper fetcher is done!")
+    logging.info("Paper fetcher is done!")
 
 
 if __name__ == "__main__":
