@@ -1,2 +1,3 @@
-requests
 absl-py
+pdfminer.six
+requests
