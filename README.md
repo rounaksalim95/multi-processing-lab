@@ -21,3 +21,8 @@ There is a CPU intensive task of searching for a given keyword in the downloaded
         - E.g.: `python3 paper_fetcher.py --multiprocessing --processes=10` or just `python3 paper_fetcher.py --processes=10`
 
 - `paper_miner.py` makes use of the same flags that were used for `paper_fetcher.py` and can be run the same way
+
+## References
+- https://docs.python.org/3/library/concurrent.futures.html
+- https://rednafi.github.io/digressions/python/2020/04/21/python-concurrent-futures.html
+- https://pdfminersix.readthedocs.io/en/latest/
