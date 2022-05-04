@@ -8,7 +8,7 @@ There is a CPU intensive task of searching for a given keyword in the downloaded
 ## Getting Started
 - Run `pip3 install -r requirements.txt` to download all the project requirements
 
-- `paper_fetcher.py` makes use of flags to control the parameters to the script
+- [paper_fetcher.py](./paper_fetcher.py) makes use of flags to control the parameters to the script
     - `--help` prints the help message
         - E.g: `python3 paper_fetcher.py --help`
     - `--noparallel` disables parallelization and runs the script sequentially
@@ -20,7 +20,7 @@ There is a CPU intensive task of searching for a given keyword in the downloaded
     - `--processes` sets the number of processes to use while multiprocessing is being used - this is set to `8` by default
         - E.g.: `python3 paper_fetcher.py --multiprocessing --processes=10` or just `python3 paper_fetcher.py --processes=10`
 
-- `paper_miner.py` makes use of the same flags that were used for `paper_fetcher.py` and can be run the same way
+- [paper_miner.py](./paper_miner.py) makes use of the same flags that were used for `paper_fetcher.py` and can be run the same way
 
 ## References
 - https://docs.python.org/3/library/concurrent.futures.html
