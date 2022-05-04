@@ -123,7 +123,11 @@ def main(argv):
     else:
         result = mine_papers_sequentially(files)
 
-    print(result)
+    # Sort results by number of times the keyword was found
+    sorted_result = sorted(result.items(), key=lambda x: x[1], reverse=True)
+
+    print("\n\n")
+    print(sorted_result)
 
 
 
