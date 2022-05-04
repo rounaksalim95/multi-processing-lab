@@ -72,18 +72,18 @@ def download_papers_in_parallel():
     """
     Downloads papers in parallel
     """
+    multi_executor = None
     if FLAGS.multiprocessing:
+        multi_executor = ProcessPoolExecutor(FLAGS.processes)
         logging.info("Downloading papers using multiprocessing")
-        with ProcessPoolExecutor(max_workers=FLAGS.processes) as executor:
-            for arg, res in zip(range(START_INDEX, END_INDEX + 1), executor.map(download_pdf, range(START_INDEX, END_INDEX + 1), chunksize=CHUNKSIZE)):
-                pass
-        logging.info("All processes returned")
-        return "done"
     else:
+        multi_executor = ThreadPoolExecutor(FLAGS.threads)
         logging.info("Downloading papers using multithreading")
-        with ThreadPoolExecutor(max_workers=FLAGS.threads) as executor:
-            return executor.map(download_pdf, range(START_INDEX, END_INDEX + 1))
 
+    with multi_executor as executor:
+        for arg, res in zip(range(START_INDEX, END_INDEX + 1), executor.map(download_pdf, range(START_INDEX, END_INDEX + 1), chunksize=CHUNKSIZE)):
+            pass
+        return "done"
 
 
 def main(argv):
