@@ -26,3 +26,4 @@ There is a CPU intensive task of searching for a given keyword in the downloaded
 - https://docs.python.org/3/library/concurrent.futures.html
 - https://rednafi.github.io/digressions/python/2020/04/21/python-concurrent-futures.html
 - https://pdfminersix.readthedocs.io/en/latest/
+- https://towardsdatascience.com/which-is-faster-python-threads-or-processes-some-insightful-examples-26074e90848f
