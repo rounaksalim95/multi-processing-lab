@@ -27,3 +27,4 @@ There is a CPU intensive task of searching for a given keyword in the downloaded
 - https://rednafi.github.io/digressions/python/2020/04/21/python-concurrent-futures.html
 - https://pdfminersix.readthedocs.io/en/latest/
 - https://towardsdatascience.com/which-is-faster-python-threads-or-processes-some-insightful-examples-26074e90848f
+- https://rvprasad.medium.com/performance-of-map-operation-in-mpi4py-and-multiprocessing-modules-55eb30a68d9d
